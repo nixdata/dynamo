@@ -5,6 +5,7 @@
 #include <dlfcn.h>
 #include "dynomer.h"
 
+using namespace dynomer;
 
 const char *DYNOMER_LIBRARY = "./lib-dynomer.so";
 

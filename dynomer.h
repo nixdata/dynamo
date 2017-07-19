@@ -2,7 +2,6 @@
 
 #include "platform.h"
 
-
 struct dynomer_state_t {
     int int_state;
     double double_state;
