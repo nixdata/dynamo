@@ -15,12 +15,12 @@ int quit = 0;
 struct dynomer_t {
     void *handle;
     ino_t id;
-    struct dynomer_api api;
-    struct dynomer_state *state;
+    dynomer_api_t api;
+    dynomer_state_t *state;
 };
 
 
-static void dynomer_load(struct dynomer_t *dynomer)
+static void dynomer_load(dynomer_t *dynomer)
 {
     struct stat attr;
     if((stat(DYNOMER_LIBRARY, &attr) == 0) && (dynomer->id != attr.st_ino)) {
@@ -33,7 +33,7 @@ static void dynomer_load(struct dynomer_t *dynomer)
         if(handle) {
             dynomer->handle = handle;
             dynomer->id = attr.st_ino;
-            const struct dynomer_api *api = (const struct dynomer_api *)dlsym(dynomer->handle, "DYNOMER_API");
+            const dynomer_api_t *api = (const dynomer_api_t *)dlsym(dynomer->handle, "DYNOMER_API");
             if(api != NULL) {
                 dynomer->api = *api;
                 if(dynomer->state == NULL) {
@@ -53,7 +53,7 @@ static void dynomer_load(struct dynomer_t *dynomer)
 }
 
 
-static void dynomer_unload(struct dynomer_t *dynomer) 
+static void dynomer_unload(dynomer_t *dynomer) 
 {
     if(dynomer->handle) {
         dynomer->api.finalize(dynomer->state);
@@ -67,7 +67,7 @@ static void dynomer_unload(struct dynomer_t *dynomer)
 
 int main(int argc, char *argv[])
 {
-    struct dynomer_t dynomer = {0};
+    dynomer_t dynomer = {0};
     dynomer::platform::init();
 
     while(!quit) {

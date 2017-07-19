@@ -17,7 +17,7 @@
 
 
 static clockid_t clock_id;
-static timespec time_spec = {0};
+static timespec time_spec; 
 
 
 namespace dynomer {
@@ -32,7 +32,16 @@ struct dyno_time_t {
 
 int init() 
 {
-    clock_getcpuclockid(0, &clock_id);
+    if(clock_getcpuclockid(0, &clock_id) != 0) {
+        // TODO: How are you dealing with runtime errors?
+        return 1;
+    }
+
+    time_spec = {0};
+
+    if(clock_gettime(clock_id, &time_spec) != 0) {
+        return 1;
+    }
 
     return 0;
 }
