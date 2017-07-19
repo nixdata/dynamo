@@ -12,7 +12,7 @@ const char *DYNOMER_LIBRARY = "./lib-dynomer.so";
 int quit = 0;
 
 
-struct dynomer {
+struct dynomer_t {
     void *handle;
     ino_t id;
     struct dynomer_api api;
@@ -20,7 +20,7 @@ struct dynomer {
 };
 
 
-static void dynomer_load(struct dynomer *dynomer)
+static void dynomer_load(struct dynomer_t *dynomer)
 {
     struct stat attr;
     if((stat(DYNOMER_LIBRARY, &attr) == 0) && (dynomer->id != attr.st_ino)) {
@@ -53,7 +53,7 @@ static void dynomer_load(struct dynomer *dynomer)
 }
 
 
-static void dynomer_unload(struct dynomer *dynomer) 
+static void dynomer_unload(struct dynomer_t *dynomer) 
 {
     if(dynomer->handle) {
         dynomer->api.finalize(dynomer->state);
@@ -67,7 +67,8 @@ static void dynomer_unload(struct dynomer *dynomer)
 
 int main(int argc, char *argv[])
 {
-    struct dynomer dynomer = {0};
+    struct dynomer_t dynomer = {0};
+    dynomer::platform::init();
 
     while(!quit) {
         dynomer_load(&dynomer);

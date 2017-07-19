@@ -2,6 +2,7 @@
 
 #include "platform.h"
 
+
 struct dynomer_state;
 
 struct dynomer_api {

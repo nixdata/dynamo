@@ -2,17 +2,50 @@
 
 #include <cstdint>
 #include <stdbool.h>
+#include <time.h>
 
-#define i8          int8_t
-#define u8          uint8_t
-#define i16         int16_t
-#define u16         uint16_t
-#define i32         int32_t
-#define u32         uint32_t
-#define i64         int64_t
-#define u64         uint64_t
-#define f32         float
-#define f64         double
+#define i8              int8_t
+#define u8              uint8_t
+#define i16             int16_t
+#define u16             uint16_t
+#define i32             int32_t
+#define u32             uint32_t
+#define i64             int64_t
+#define u64             uint64_t
+#define f32             float
+#define f64             double
 
-#define DYNOMER_OK     1
-#define DYNOMER_ERROR  0
+
+static clockid_t clock_id;
+static timespec time_spec = {0};
+
+
+namespace dynomer {
+namespace platform {
+
+
+struct dyno_time_t {
+    long seconds;
+    long nanoseconds;
+};
+
+
+int init() 
+{
+    clock_getcpuclockid(0, &clock_id);
+
+    return 0;
+}
+
+dyno_time_t get_high_res_time() 
+{
+    dyno_time_t dyno_time = {0, 0};
+    clock_gettime(clock_id, &time_spec);
+    dyno_time.seconds = time_spec.tv_sec;
+    dyno_time.nanoseconds = time_spec.tv_nsec;
+
+    return dyno_time;
+}
+
+}
+}

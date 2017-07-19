@@ -24,8 +24,12 @@ static struct dynomer_state * dynomer_init()
 
 static bool dynomer_step(struct dynomer_state *state) 
 {
-    printf("\e[1;1H\e[2J"); // clear terminal screen
-    printf("step\n");
+    //printf("\e[1;1H\e[2J"); // clear terminal screen
+    using namespace dynomer;
+    using namespace platform;
+    struct dyno_time_t t = get_high_res_time();
+    //printf("\033c");
+    printf("%ld:%ld\n", t.seconds, t.nanoseconds);
     return true;
 }
 
