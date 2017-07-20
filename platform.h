@@ -1,8 +1,13 @@
 #pragma once
-
 #include <cstdint>
 #include <stdbool.h>
 #include <time.h>
+
+
+#ifdef __cplusplus
+    extern "C" {
+#endif
+
 
 #define i8              int8_t
 #define u8              uint8_t
@@ -20,17 +25,13 @@ static clockid_t clock_id;
 static timespec time_spec; 
 
 
-namespace dynomer {
-namespace platform {
-
-
 struct dyno_time_t {
     long seconds;
     long nanoseconds;
 };
 
 
-int init() 
+int dyno_sys_init() 
 {
     if(clock_getcpuclockid(0, &clock_id) != 0) {
         // TODO: How are you dealing with runtime errors?
@@ -46,9 +47,9 @@ int init()
     return 0;
 }
 
-dyno_time_t get_high_res_time() 
+struct dyno_time_t dyno_sys_hr_time() 
 {
-    dyno_time_t dyno_time = {0, 0};
+    struct dyno_time_t dyno_time = {0, 0};
     clock_gettime(clock_id, &time_spec);
     dyno_time.seconds = time_spec.tv_sec;
     dyno_time.nanoseconds = time_spec.tv_nsec;
@@ -56,5 +57,7 @@ dyno_time_t get_high_res_time()
     return dyno_time;
 }
 
-}
-}
+
+#ifdef __cplusplus
+    }
+#endif

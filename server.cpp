@@ -5,76 +5,75 @@
 #include <dlfcn.h>
 #include "dynomer.h"
 
-using namespace dynomer;
 
-const char *DYNOMER_LIBRARY = "./lib-dynomer.so";
+const char *DYNOMER_LIBRARY = "./libdynomer.so";
 
 
 int quit = 0;
 
 
-struct dynomer_t {
+struct dyno_t {
     void *handle;
     ino_t id;
-    dynomer_api_t api;
-    dynomer_state_t *state;
+    struct dyno_api_t api;
+    struct dyno_state_t *state;
 };
 
 
-static void dynomer_load(dynomer_t *dynomer)
+static void dyno_load(dyno_t *dyno)
 {
     struct stat attr;
-    if((stat(DYNOMER_LIBRARY, &attr) == 0) && (dynomer->id != attr.st_ino)) {
-        if(dynomer->handle) {
-            dynomer->api.unload(dynomer->state);
-            dlclose(dynomer->handle);
+    if((stat(DYNOMER_LIBRARY, &attr) == 0) && (dyno->id != attr.st_ino)) {
+        if(dyno->handle) {
+            dyno->api.unload(dyno->state);
+            dlclose(dyno->handle);
         }
 
         void *handle = dlopen(DYNOMER_LIBRARY, RTLD_NOW);
         if(handle) {
-            dynomer->handle = handle;
-            dynomer->id = attr.st_ino;
-            const dynomer_api_t *api = (const dynomer_api_t *)dlsym(dynomer->handle, "DYNOMER_API");
+            dyno->handle = handle;
+            dyno->id = attr.st_ino;
+            const struct dyno_api_t *api = (const struct dyno_api_t *)dlsym(dyno->handle, "DYNOMER_API");
             if(api != NULL) {
-                dynomer->api = *api;
-                if(dynomer->state == NULL) {
-                    dynomer->state = dynomer->api.init();
+                dyno->api = *api;
+                if(dyno->state == NULL) {
+                    dyno->state = dyno->api.init();
                 }
-                dynomer->api.reload(dynomer->state);
+                dyno->api.reload(dyno->state);
             } else {
-                dlclose(dynomer->handle);
-                dynomer->handle = NULL;
-                dynomer->id = 0;
+                dlclose(dyno->handle);
+                dyno->handle = NULL;
+                dyno->id = 0;
             }
         } else {
-            dynomer->handle = NULL;
-            dynomer->id = 0;
+            dyno->handle = NULL;
+            dyno->id = 0;
         }
     }
 }
 
 
-static void dynomer_unload(dynomer_t *dynomer) 
+static void dyno_unload(dyno_t *dyno) 
 {
-    if(dynomer->handle) {
-        dynomer->api.finalize(dynomer->state);
-        dynomer->state = NULL;
-        dlclose(dynomer->handle);
-        dynomer->handle = NULL;
-        dynomer->id = 0;
+    if(dyno->handle) {
+        dyno->api.finalize(dyno->state);
+        dyno->state = NULL;
+        dlclose(dyno->handle);
+        dyno->handle = NULL;
+        dyno->id = 0;
     }
 }
 
 
 int main(int argc, char *argv[])
 {
-    dynomer_t dynomer = {0};
-    dynomer::platform::init();
+    dyno_t dyno = {0};
+    dyno_sys_init();
 
     while(!quit) {
-        dynomer_load(&dynomer);
-        if(dynomer.handle) {
-            if(!dynomer.api.step(dynomer.state)) {
+        dyno_load(&dyno);
+        if(dyno.handle) {
+            if(!dyno.api.step(dyno.state)) {
                 break;
             }
         }
@@ -82,5 +81,5 @@ int main(int argc, char *argv[])
         usleep(100000);
     }
 
-    dynomer_unload(&dynomer);
+    dyno_unload(&dyno);
 }
