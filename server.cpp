@@ -3,77 +3,77 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <dlfcn.h>
-#include "dynomer.h"
+#include "dynamo.h"
+#include "dynamo-system.h"
 
 
-const char *DYNOMER_LIBRARY = "./libdynomer.so";
+const char *DYNAMO_LIBRARY = "./libdynamo.so";
 
 
 int quit = 0;
 
 
-struct dyno_t {
+struct dmo_t {
     void *handle;
     ino_t id;
-    struct dyno_api_t api;
-    struct dyno_state_t *state;
+    struct dmo_api_t api;
+    struct dmo_state_t *state;
 };
 
 
-static void dyno_load(dyno_t *dyno)
+static void dmo_load(dmo_t *dmo)
 {
     struct stat attr;
-    if((stat(DYNOMER_LIBRARY, &attr) == 0) && (dyno->id != attr.st_ino)) {
-        if(dyno->handle) {
-            dyno->api.unload(dyno->state);
-            dlclose(dyno->handle);
+    if((stat(DYNAMO_LIBRARY, &attr) == 0) && (dmo->id != attr.st_ino)) {
+        if(dmo->handle) {
+            dmo->api.unload(dmo->state);
+            dlclose(dmo->handle);
         }
 
-        void *handle = dlopen(DYNOMER_LIBRARY, RTLD_NOW);
+        void *handle = dlopen(DYNAMO_LIBRARY, RTLD_NOW);
         if(handle) {
-            dyno->handle = handle;
-            dyno->id = attr.st_ino;
-            const struct dyno_api_t *api = (const struct dyno_api_t *)dlsym(dyno->handle, "DYNOMER_API");
+            dmo->handle = handle;
+            dmo->id = attr.st_ino;
+            const struct dmo_api_t *api = (const struct dmo_api_t *)dlsym(dmo->handle, "DYNAMO_API");
             if(api != NULL) {
-                dyno->api = *api;
-                if(dyno->state == NULL) {
-                    dyno->state = dyno->api.init();
+                dmo->api = *api;
+                if(dmo->state == NULL) {
+                    dmo->state = dmo->api.init();
                 }
-                dyno->api.reload(dyno->state);
+                dmo->api.reload(dmo->state);
             } else {
-                dlclose(dyno->handle);
-                dyno->handle = NULL;
-                dyno->id = 0;
+                dlclose(dmo->handle);
+                dmo->handle = NULL;
+                dmo->id = 0;
             }
         } else {
-            dyno->handle = NULL;
-            dyno->id = 0;
+            dmo->handle = NULL;
+            dmo->id = 0;
         }
     }
 }
 
 
-static void dyno_unload(dyno_t *dyno) 
+static void dmo_unload(dmo_t *dmo) 
 {
-    if(dyno->handle) {
-        dyno->api.finalize(dyno->state);
-        dyno->state = NULL;
-        dlclose(dyno->handle);
-        dyno->handle = NULL;
-        dyno->id = 0;
+    if(dmo->handle) {
+        dmo->api.finalize(dmo->state);
+        dmo->state = NULL;
+        dlclose(dmo->handle);
+        dmo->handle = NULL;
+        dmo->id = 0;
     }
 }
 
 
 int main(int argc, char *argv[])
 {
-    dyno_t dyno = {0};
-    dyno_sys_init();
+    dmo_t dmo = {0};
 
     while(!quit) {
-        dyno_load(&dyno);
-        if(dyno.handle) {
-            if(!dyno.api.step(dyno.state)) {
+        dmo_load(&dmo);
+        if(dmo.handle) {
+            if(!dmo.api.step(dmo.state)) {
                 break;
             }
         }
@@ -81,5 +81,5 @@ int main(int argc, char *argv[])
         usleep(100000);
     }
 
-    dyno_unload(&dyno);
+    dmo_unload(&dmo);
 }
