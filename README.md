@@ -1,2 +1,2 @@
-# dynomer
+# dynamo
 A game engine experiment.
