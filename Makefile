@@ -1,16 +1,16 @@
-CFLAGS  = -std=c++11 -pedantic -Wall -Werror -O2 -fPIC 
+CFLAGS  = -std=c++11 -pedantic -Wall -O2 -fPIC 
 LDLIBS  = -ldl
 
-all : server libdynamo.so
+all : main libdynamo.so
 
-server : server.cpp
+main : server.cpp dynamo.h
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< $(LDLIBS)
 
-libdynamo.so : dynamo.cpp dynamo-system.h dynamo-system.cpp
+libdynamo.so : dynamo.cpp dynamo.h dynamo-system.cpp dynamo-system.h
 	$(CC) $(CFLAGS) -shared $(LDFLAGS) -o $@ $< $(LDLIBS)
 
-test : server libdynamo.so
+test : main libdynamo.so
 	./$<
 
 clean :
-	$(RM) *.o *.so server
+	$(RM) *.o *.so main

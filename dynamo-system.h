@@ -21,16 +21,14 @@
 #define f64             double
 
 
-struct dmo_time_t {
+struct dmo_time {
     long seconds;
     long nanoseconds;
 };
 
 
 int dmo_sys_init();
-
-struct dmo_time_t dmo_sys_time();
-
+struct dmo_time dmo_sys_time();
 
 #ifdef __cplusplus
     }

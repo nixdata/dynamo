@@ -1,5 +1,7 @@
-clang++-4.0 \
---std=c++11 \
--Werror \
+gcc \
+-L/home/phil/Code/dynamo/ \
+-Wl,-rpath=. \
+-Wall \
+-o server \
 server.cpp \
--o server
+-ldynamo

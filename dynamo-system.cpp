@@ -23,9 +23,9 @@ int dmo_sys_init()
 }
 
 
-struct dmo_time_t dmo_sys_time() 
+struct dmo_time dmo_sys_time() 
 {
-    struct dmo_time_t dmo_time = {0, 0};
+    struct dmo_time dmo_time = {0, 0};
     clock_gettime(clock_id, &time_spec);
     dmo_time.seconds = time_spec.tv_sec;
     dmo_time.nanoseconds = time_spec.tv_nsec;

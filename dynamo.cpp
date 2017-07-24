@@ -4,48 +4,46 @@
 #include "dynamo-system.h"
 
 
-static struct dmo_state_t * dmo_init()
+static bool running;
+static struct dmo_time dmo_time;
+
+
+void interrupt_handler(int signal) 
 {
-    // TODO: Swap with your allocator.
-    struct dmo_state_t *state = (struct dmo_state_t *)malloc(sizeof(struct dmo_state_t));
-
-    state->int_state = 0;
-    state->double_state = 0.0f;
-    state->void_state = NULL;
-
-    return state;
+    (void) signal;
+    running = false;
 }
 
 
-static bool dmo_step(struct dmo_state_t *state) 
+int dmo_startup() 
 {
-    struct dmo_time_t t = dmo_sys_time();
-    printf("\033c");
-    printf("%ld:%ld\n", t.seconds, t.nanoseconds);
-    return true;
+    running = false;
+    dmo_time = {0};
+    printf("Starting dynamo...\n");
+    dmo_sys_init();
+
+    printf("Dynamo on!\n");
+
+    return DMO_OK; 
 }
 
 
-static void dmo_unload(struct dmo_state_t *state)
+void dmo_run() 
 {
+    running = true;
+
+    while(running) {
+
+    }
+
+    dmo_shutdown();
 }
 
 
-static void dmo_reload(struct dmo_state_t *state)
+int dmo_shutdown()
 {
+    printf("Shutting down dynamo...\n");
+    printf("Dynamo off!\n");
+
+    return DMO_OK;
 }
-
-
-static void dmo_finalize(struct dmo_state_t *state)
-{
-    free(state); // Swap with your free function.
-}
-
-
-const struct dmo_api_t DYNAMO_API = {
-    dmo_init,
-    dmo_finalize,
-    dmo_reload,
-    dmo_unload,
-    dmo_step
-};
