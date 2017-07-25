@@ -5,10 +5,14 @@
 #include "dynamo-system.h"
 
 
-static bool running;
+#define FIXED_TIME_LIMIT 16666666
+#define FRAME_TIME_CLAMP 500000000
+
+
+static bool running = false;
 static struct dmo_time current_time;
 static struct dmo_time total_time;
-static struct dmo_time delta_time;
+static struct dmo_time fixed_time;
 static struct dmo_time accum_time;
 
 
@@ -22,7 +26,7 @@ void interrupt_handler(int signal)
 
 int dmo_startup() 
 {
-    running = false;
+    if(running) return DMO_OK;
 
     printf("Starting Dynamo...\n");
 
@@ -38,10 +42,11 @@ int dmo_startup()
 void dmo_run() 
 {
     running = true;
+    dmo_time base_time = dmo_sys_time();
     current_time = {0};
     total_time = {0};
-    delta_time = {0};
     accum_time = {0};
+    fixed_time = {0, FIXED_TIME_LIMIT}; // 60Hz
 
     // struct dmo_state previous_state;
     // struct dmo_state current_state;
@@ -52,8 +57,13 @@ void dmo_run()
 
         frame_time.seconds = new_time.seconds - current_time.seconds;
         frame_time.nanoseconds = new_time.nanoseconds - current_time.nanoseconds;
-        // TODO: Figure out frame_time clamp below.
-        //if(frame_time > some_clamped_value) { frame_time = some_clamped_value; }
+        if((frame_time.seconds > 0) || (frame_time.nanoseconds > FRAME_TIME_CLAMP)) {
+            frame_time.seconds = 0;
+            frame_time.nanoseconds = FRAME_TIME_CLAMP;
+        }
+        
+        total_time.seconds = new_time.seconds - base_time.seconds;
+        total_time.nanoseconds = new_time.nanoseconds - base_time.nanoseconds;
 
         current_time.seconds = new_time.seconds;
         current_time.nanoseconds = new_time.nanoseconds;
@@ -61,21 +71,19 @@ void dmo_run()
         accum_time.seconds += frame_time.seconds;
         accum_time.nanoseconds += frame_time.nanoseconds;
 
-        while((accum_time.seconds >= delta_time.seconds) && (accum_time.nanoseconds >= delta_time.nanoseconds)) {
+        while((accum_time.seconds >= fixed_time.seconds) && (accum_time.nanoseconds >= fixed_time.nanoseconds)) {
 
             //previous_state = current_state;
 
-            // simulate current_state with delta_time;
-            // dmo_sim_step(current_state, total_time, delta_time);
-
-            total_time.seconds += delta_time.seconds;
-            total_time.nanoseconds += delta_time.nanoseconds;
-            accum_time.seconds -= delta_time.seconds;
-            accum_time.nanoseconds -= delta_time.nanoseconds;
+            // simulate current_state with fixed_time;
+            // dmo_sim_step(current_state, total_time, fixed_time);
+            
+            accum_time.seconds -= fixed_time.seconds;
+            accum_time.nanoseconds -= fixed_time.nanoseconds;
         }
 
-        const double alpha_seconds = accum_time.seconds / delta_time.seconds;
-        const double alpha_nanoseconds = accum_time.nanoseconds / delta_time.nanoseconds;
+        const double alpha_seconds = accum_time.seconds / fixed_time.seconds;
+        const double alpha_nanoseconds = accum_time.nanoseconds / fixed_time.nanoseconds;
         (void)alpha_seconds; 
         (void)alpha_nanoseconds;
         
