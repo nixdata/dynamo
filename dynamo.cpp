@@ -6,7 +6,8 @@
 
 
 #define NANOS_IN_SECOND 1000000000
-#define FIXED_TIME_LIMIT 16666666 // 60Hz
+#define SIM_RATE_LIMIT 16666666 // 60Hz
+#define NET_RATE_LIMIT 16666666 // 60Hz
 #define FRAME_TIME_MAX 500000000
 
 
@@ -43,7 +44,8 @@ void dmo_run()
     struct dmo_time new_time {0};
     struct dmo_time total_time = {0};
     struct dmo_time current_time = {0};
-    long accum_time = 0;
+    long net_time = 0;
+    long sim_time = 0;
     long frame_time = 0;
     double alpha_time = 0.0;
 
@@ -69,24 +71,24 @@ void dmo_run()
         current_time.seconds = new_time.seconds;
         current_time.nanoseconds = new_time.nanoseconds;
 
-        accum_time += frame_time;
-
-        if(accum_time >= FIXED_TIME_LIMIT) {
-            
+        net_time += frame_time;
+        if(net_time >= NET_RATE_LIMIT) {
             // dmo_net_step();
-
-            while(accum_time >= FIXED_TIME_LIMIT) {
-
-                //previous_state = current_state;
-
-                // simulate current_state with FIXED_TIME_LIMIT;
-                // dmo_sim_step(current_state, total_time, FIXED_TIME_LIMIT);
-                
-                accum_time -= FIXED_TIME_LIMIT;
-            }
+            net_time = 0;
         }
 
-        alpha_time = accum_time / FIXED_TIME_LIMIT;
+        sim_time += frame_time;
+        while(sim_time >= SIM_RATE_LIMIT) {
+
+            //previous_state = current_state;
+
+            // simulate current_state with SIM_RATE_LIMIT;
+            // dmo_sim_step(current_state, total_time, SIM_RATE_LIMIT);
+            
+            sim_time -= SIM_RATE_LIMIT;
+        }
+
+        alpha_time = sim_time / SIM_RATE_LIMIT;
         (void)alpha_time;
         
         // dmo_state alpha_state = current_state * alpha + previous_state * (1.0 - alpha_state);
