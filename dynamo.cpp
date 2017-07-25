@@ -5,8 +5,9 @@
 #include "dynamo-system.h"
 
 
-#define FIXED_TIME_LIMIT 16666666
-#define FRAME_TIME_CLAMP 500000000
+#define NANOS_IN_SECOND 1000000000
+#define FIXED_TIME_LIMIT 16666666 // 60Hz
+#define FRAME_TIME_MAX 500000000
 
 
 static bool running = false;
@@ -39,22 +40,26 @@ void dmo_run()
 {
     running = true;
     struct dmo_time base_time = dmo_sys_time();
+    struct dmo_time new_time {0};
     struct dmo_time total_time = {0};
     struct dmo_time current_time = {0};
     long accum_time = 0;
     long frame_time = 0;
-    long fixed_time = FIXED_TIME_LIMIT;
+    double alpha_time = 0.0;
 
     // struct dmo_state previous_state;
     // struct dmo_state current_state;
 
     while(running) {
 
-        dmo_time new_time = dmo_sys_time();
-
-        frame_time = new_time.nanoseconds - current_time.nanoseconds;
-        if(frame_time > FRAME_TIME_CLAMP) {
-            frame_time = FRAME_TIME_CLAMP;
+        new_time = dmo_sys_time();
+        
+        struct dmo_time delta_time = {0};
+        delta_time.seconds = new_time.seconds - current_time.seconds;
+        delta_time.nanoseconds = new_time.nanoseconds - current_time.nanoseconds;
+        frame_time = (delta_time.seconds * NANOS_IN_SECOND) + delta_time.nanoseconds;
+        if(frame_time > FRAME_TIME_MAX) {
+            frame_time = FRAME_TIME_MAX;
         }
         
         total_time.seconds = new_time.seconds - base_time.seconds;
@@ -66,21 +71,26 @@ void dmo_run()
 
         accum_time += frame_time;
 
-        while(accum_time >= fixed_time) {
-
-            //previous_state = current_state;
-
-            // simulate current_state with fixed_time;
-            // dmo_sim_step(current_state, total_time, fixed_time);
+        if(accum_time >= FIXED_TIME_LIMIT) {
             
-            accum_time -= fixed_time;
+            // dmo_net_step();
+
+            while(accum_time >= FIXED_TIME_LIMIT) {
+
+                //previous_state = current_state;
+
+                // simulate current_state with FIXED_TIME_LIMIT;
+                // dmo_sim_step(current_state, total_time, FIXED_TIME_LIMIT);
+                
+                accum_time -= FIXED_TIME_LIMIT;
+            }
         }
 
-        const double alpha_time = accum_time / fixed_time;
+        alpha_time = accum_time / FIXED_TIME_LIMIT;
         (void)alpha_time;
         
         // dmo_state alpha_state = current_state * alpha + previous_state * (1.0 - alpha_state);
-        // dmo_gfx_render(current_state);
+        // dmo_gfx_step(current_state);
     }
 }
 
