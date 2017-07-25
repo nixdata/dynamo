@@ -6,8 +6,9 @@
 
 
 #define NANOS_IN_SECOND 1000000000
-#define SIM_RATE_LIMIT 16666666 // 60Hz
-#define NET_RATE_LIMIT 16666666 // 60Hz
+#define SIM_UPDATE_RATE 16666666 // 60Hz
+#define NET_UPDATE_RATE 16666666 // 60Hz
+#define GFX_UPDATE_RATE 8333333  // 120Hz
 #define FRAME_TIME_MAX 500000000
 
 
@@ -46,7 +47,9 @@ void dmo_run()
     struct dmo_time current_time = {0};
     long net_time = 0;
     long sim_time = 0;
+    long gfx_time = 0;
     long frame_time = 0;
+    long sleep_time = 0;
     double alpha_time = 0.0;
 
     // struct dmo_state previous_state;
@@ -72,27 +75,34 @@ void dmo_run()
         current_time.nanoseconds = new_time.nanoseconds;
 
         net_time += frame_time;
-        if(net_time >= NET_RATE_LIMIT) {
+        if(net_time >= NET_UPDATE_RATE) {
             // dmo_net_step();
             net_time = 0;
         }
 
         sim_time += frame_time;
-        while(sim_time >= SIM_RATE_LIMIT) {
+        while(sim_time >= SIM_UPDATE_RATE) {
 
             //previous_state = current_state;
 
-            // simulate current_state with SIM_RATE_LIMIT;
-            // dmo_sim_step(current_state, total_time, SIM_RATE_LIMIT);
+            // simulate current_state with SIM_UPDATE_RATE;
+            // dmo_sim_step(current_state, total_time, SIM_UPDATE_RATE);
             
-            sim_time -= SIM_RATE_LIMIT;
+            sim_time -= SIM_UPDATE_RATE;
         }
 
-        alpha_time = sim_time / SIM_RATE_LIMIT;
+        alpha_time = sim_time / SIM_UPDATE_RATE;
         (void)alpha_time;
         
-        // dmo_state alpha_state = current_state * alpha + previous_state * (1.0 - alpha_state);
-        // dmo_gfx_step(current_state);
+        // TODO: Remove this once the client is up and running.
+        gfx_time += frame_time;
+        if(gfx_time >= GFX_UPDATE_RATE) {
+            // dmo_state alpha_state = current_state * alpha + previous_state * (1.0 - alpha_state);
+            // dmo_gfx_step(current_state);
+        }
+        
+        sleep_time = GFX_UPDATE_RATE - frame_time;
+        //sleep(sleep_time);
     }
 }
 
