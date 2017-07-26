@@ -32,3 +32,10 @@ struct dmo_time dmo_sys_time()
 
     return dmo_time;
 }
+
+
+void dmo_sys_sleep(dmo_time sleep_time)
+{
+    const struct timespec ts = {sleep_time.seconds, sleep_time.nanoseconds};
+    nanosleep(&ts, NULL);
+}

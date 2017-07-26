@@ -101,8 +101,11 @@ void dmo_run()
             // dmo_gfx_step(current_state);
         }
         
-        sleep_time = GFX_UPDATE_RATE - frame_time;
-        //sleep(sleep_time);
+        new_time = dmo_sys_time();
+        sleep_time = GFX_UPDATE_RATE - (new_time.nanoseconds - current_time.nanoseconds);
+        if(sleep_time < GFX_UPDATE_RATE) {
+            dmo_sys_sleep({0, sleep_time});
+        }
     }
 }
 
