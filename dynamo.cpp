@@ -41,8 +41,8 @@ int dmo_startup()
 void dmo_run() 
 {
     running = true;
-    struct dmo_time base_time = dmo_sys_time();
     struct dmo_time new_time {0};
+    struct dmo_time base_time = dmo_sys_time();
     struct dmo_time total_time = {0};
     struct dmo_time current_time = {0};
     long net_time = 0;
@@ -51,12 +51,12 @@ void dmo_run()
     long frame_time = 0;
     long sleep_time = 0;
     double alpha_time = 0.0;
-
+    
     // struct dmo_state previous_state;
     // struct dmo_state current_state;
 
     while(running) {
-
+        
         new_time = dmo_sys_time();
         
         struct dmo_time delta_time = {0};
@@ -74,6 +74,7 @@ void dmo_run()
         current_time.seconds = new_time.seconds;
         current_time.nanoseconds = new_time.nanoseconds;
 
+
         net_time += frame_time;
         if(net_time >= NET_UPDATE_RATE) {
             // dmo_net_step();
@@ -82,6 +83,7 @@ void dmo_run()
 
         sim_time += frame_time;
         while(sim_time >= SIM_UPDATE_RATE) {
+            
 
             //previous_state = current_state;
 
@@ -93,6 +95,8 @@ void dmo_run()
 
         alpha_time = sim_time / SIM_UPDATE_RATE;
         (void)alpha_time;
+            
+        printf("%ld:%ld\n", current_time.seconds, current_time.nanoseconds);
         
         // TODO: Remove this once the client is up and running.
         gfx_time += frame_time;
@@ -100,11 +104,12 @@ void dmo_run()
             // dmo_state alpha_state = current_state * alpha + previous_state * (1.0 - alpha_state);
             // dmo_gfx_step(current_state);
         }
-        
+            
         new_time = dmo_sys_time();
         sleep_time = GFX_UPDATE_RATE - (new_time.nanoseconds - current_time.nanoseconds);
-        if(sleep_time < GFX_UPDATE_RATE) {
-            dmo_sys_sleep({0, sleep_time});
+        if(sleep_time > 0) {
+            long foo = new_time.nanoseconds + sleep_time;
+            dmo_sys_sleep({new_time.seconds, foo});
         }
     }
 }
