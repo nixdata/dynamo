@@ -27,7 +27,6 @@ struct dmo_time {
 };
 
 
-int dmo_sys_init();
 struct dmo_time dmo_sys_time();
 void dmo_sys_sleep(struct dmo_time);
 

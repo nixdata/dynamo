@@ -30,7 +30,6 @@ int dmo_startup()
     printf("Starting Dynamo...\n");
 
     signal(SIGINT, interrupt_handler);
-    dmo_sys_init();
 
     printf("Dynamo on!\n");
 
@@ -42,9 +41,7 @@ void dmo_run()
 {
     running = true;
     struct dmo_time new_time {0};
-    struct dmo_time base_time = dmo_sys_time();
-    struct dmo_time total_time = {0};
-    struct dmo_time current_time = {0};
+    struct dmo_time current_time = dmo_sys_time();
     long net_time = 0;
     long sim_time = 0;
     long gfx_time = 0;
@@ -67,17 +64,12 @@ void dmo_run()
             frame_time = FRAME_TIME_MAX;
         }
         
-        total_time.seconds = new_time.seconds - base_time.seconds;
-        total_time.nanoseconds = new_time.nanoseconds - base_time.nanoseconds;
-        (void)total_time;
-
         current_time.seconds = new_time.seconds;
         current_time.nanoseconds = new_time.nanoseconds;
 
-
         net_time += frame_time;
         if(net_time >= NET_UPDATE_RATE) {
-            // dmo_net_step();
+            // dmo_net_update();
             net_time = 0;
         }
 
@@ -88,28 +80,29 @@ void dmo_run()
             //previous_state = current_state;
 
             // simulate current_state with SIM_UPDATE_RATE;
-            // dmo_sim_step(current_state, total_time, SIM_UPDATE_RATE);
+            // dmo_sim_update(current_state, total_time, SIM_UPDATE_RATE);
             
             sim_time -= SIM_UPDATE_RATE;
         }
-
+        
+        // TODO: Ripped from the gaffer. Personally unverified.
         alpha_time = sim_time / SIM_UPDATE_RATE;
         (void)alpha_time;
-            
-        printf("%ld:%ld\n", current_time.seconds, current_time.nanoseconds);
         
         // TODO: Remove this once the client is up and running.
         gfx_time += frame_time;
         if(gfx_time >= GFX_UPDATE_RATE) {
             // dmo_state alpha_state = current_state * alpha + previous_state * (1.0 - alpha_state);
-            // dmo_gfx_step(current_state);
+            // dmo_gfx_update(current_state);
         }
             
         new_time = dmo_sys_time();
         sleep_time = GFX_UPDATE_RATE - (new_time.nanoseconds - current_time.nanoseconds);
-        if(sleep_time > 0) {
-            long foo = new_time.nanoseconds + sleep_time;
-            dmo_sys_sleep({new_time.seconds, foo});
+        if(sleep_time >= 0) {
+            dmo_sys_sleep({0, sleep_time});
+        } else {
+            // TODO: Test and handle this condition.
+            printf("halp! I'm running behind!\n");
         }
     }
 }
