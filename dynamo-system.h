@@ -28,6 +28,7 @@ struct dmo_time {
 
 
 struct dmo_time dmo_sys_time();
+double dmo_sys_time_to_double(struct dmo_time dmo_time);
 void dmo_sys_sleep(struct dmo_time);
 
 #ifdef __cplusplus
