@@ -3,6 +3,7 @@
 #include <signal.h>
 #include "dynamo.h"
 #include "dynamo-system.h"
+#include "dynamo-network.h"
 
 
 #define NANOS_IN_SECOND 1000000000
@@ -30,6 +31,8 @@ int dmo_startup()
     printf("Starting Dynamo...\n");
 
     signal(SIGINT, interrupt_handler);
+    
+    dmo_net_startup();
 
     printf("Dynamo on!\n");
 
