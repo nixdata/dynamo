@@ -1,5 +1,6 @@
 #include <time.h>
 #include <stdio.h>
+#include "dynamo.h"
 #include "dynamo-system.h"
 
 
@@ -17,7 +18,7 @@ struct dmo_time dmo_sys_time()
 
 double dmo_sys_time_to_double(struct dmo_time dmo_time)
 {
-    return (double)dmo_time.seconds + ((double)dmo_time.nanoseconds / 1000000000);
+    return (double)dmo_time.seconds + ((double)dmo_time.nanoseconds / NANOS_IN_SECOND);
 }
 
 
