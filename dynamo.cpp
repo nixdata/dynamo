@@ -109,6 +109,7 @@ int dmo_shutdown()
     running = false;
 
     printf("\nShutting down Dynamo...\n");
+    dmo_net_shutdown();
     printf("Dynamo off!\n");
 
     exit(0);

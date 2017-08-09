@@ -81,5 +81,8 @@ int dmo_net_update(dmo_time time)
 
 int dmo_net_shutdown()
 {
+    printf("shutting down dmo_network\n");
+    netcode_server_destroy(server);
+    netcode_term();
     return DMO_OK;
 }
