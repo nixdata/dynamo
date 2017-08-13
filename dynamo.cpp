@@ -65,7 +65,7 @@ void dmo_run()
 
         net_time += frame_time;
         if(net_time >= NET_UPDATE_RATE) {
-            // dmo_net_update();
+            dmo_net_update(current_time);
             net_time = 0;
         }
 

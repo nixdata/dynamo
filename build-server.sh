@@ -1,9 +1,10 @@
 gcc \
--L/home/phil/Code/dynamo/ \
+-v \
 -Wl,-rpath=. \
 -Werror \
 -Wall \
+-L./libdynamo \
+-lsodium \
 -o server \
 server.cpp \
--ldynamo \
--lsodium \
+-I./
