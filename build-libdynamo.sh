@@ -5,7 +5,6 @@ gcc \
 -fPIC \
 -shared \
 -o libdynamo.so \
--ldl \
 ./lib/netcode.io/c/netcode.c \
 dynamo.cpp \
 dynamo-system.cpp \

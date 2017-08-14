@@ -1,10 +1,9 @@
 gcc \
--v \
--Wl,-rpath=. \
--Werror \
+-L./ \
+-Wl,-rpath=./ \
 -Wall \
--L./libdynamo \
--lsodium \
+-Werror \
 -o server \
 server.cpp \
--I./
+-ldynamo \
+-lsodium \
