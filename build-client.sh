@@ -1,11 +1,10 @@
 gcc \
--ggdb \
 -L./ \
 -Wl,-rpath=./ \
 -Wall \
 -Werror \
--o server \
+-o client \
 ./lib/netcode.io/c/netcode.c \
-server.cpp \
+client.cpp \
 dynamo-system.cpp \
 -lsodium \

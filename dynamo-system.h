@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <stdbool.h>
 #include <time.h>
+#include <signal.h>
 
 
 #ifdef __cplusplus
@@ -30,6 +31,7 @@ struct dmo_time {
 struct dmo_time dmo_sys_time();
 double dmo_sys_time_to_double(struct dmo_time dmo_time);
 void dmo_sys_sleep(struct dmo_time);
+void dmo_sys_interrupt_handler(int signal);
 
 #ifdef __cplusplus
     }
