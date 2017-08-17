@@ -21,7 +21,7 @@ static uint8_t private_key[NETCODE_KEY_BYTES] = { 0x60, 0x6a, 0xbe, 0x6e, 0xc9, 
 
 int dmo_server_startup() 
 {
-    if(running) return DYNAMO_OK;
+    // TODO: Check to make sure server isn't running already.
 
     printf("Starting Dynamo server...\n");
 
@@ -94,7 +94,8 @@ int dmo_server_update(dmo_time time)
 
 void dmo_server_shutdown()
 {
-    running = false;
+
+    // TODO: Flip running to false
 
     printf("\nShutting down Dynamo server...\n");
     netcode_server_destroy(server);
