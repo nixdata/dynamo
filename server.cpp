@@ -73,10 +73,11 @@ int dmo_server_update(dmo_time time)
             i32 packet_bytes; 
             u64 packet_sequence;
             u8 *packet = netcode_server_receive_packet(server, client_index, &packet_bytes, &packet_sequence);
-            // packet->packet_data should have the goods.
             if(!packet) {
                 break;
             }
+            
+            printf("first byte: %u\n", packet[0]);
 
             for(int i = 0; i < NETCODE_MAX_PACKET_SIZE; ++i) {
                 packet_data[i] = (u8)i;

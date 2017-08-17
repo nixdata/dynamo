@@ -68,7 +68,7 @@ int dmo_client_startup()
     
     printf("packet data: ");
     for(u32 i = 0; i < NETCODE_MAX_PACKET_SIZE; ++i) {
-        packet_data[i] = 42;//(u8)i;
+        packet_data[i] = (u8)42;//(u8)i;
     }
 
     printf("Dynamo client on!\n");
