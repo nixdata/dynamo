@@ -5,7 +5,7 @@
 #include <string.h>
 #include <inttypes.h> // TODO: nix this if you're not printing out client id using PRIx64
 #include "dynamo.h"
-#include "./lib/netcode.io/c/netcode.h"
+#include "./lib/netcode/netcode.h"
 
 
 #define TEST_PROTOCOL_ID 0x1122334455667788

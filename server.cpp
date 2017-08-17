@@ -4,7 +4,7 @@
 #include <signal.h>
 #include <string.h>
 #include "dynamo.h"
-#include "./lib/netcode.io/c/netcode.h"
+#include "./lib/netcode/netcode.h"
 
 
 #define TEST_PROTOCOL_ID 0x1122334455667788
