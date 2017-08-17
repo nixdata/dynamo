@@ -5,7 +5,8 @@ gcc \
 -Wall \
 -Werror \
 -o server \
-./lib/netcode.io/c/netcode.c \
+./lib/netcode/netcode.c \
 server.cpp \
 dynamo-system.cpp \
+dynamo-server.cpp \
 -lsodium \

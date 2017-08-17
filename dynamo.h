@@ -1,9 +1,10 @@
 #pragma once
-#include "dynamo-system.h"
 
 #ifdef __cplusplus
     extern "C" {
 #endif
+
+// TODO: Consider bringnig dmo_system code here. Simplify!
 
 #define DYNAMO_OK 0
 #define DYNAMO_ERROR 1

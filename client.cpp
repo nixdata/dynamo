@@ -5,6 +5,7 @@
 #include <string.h>
 #include <inttypes.h> // TODO: nix this if you're not printing out client id using PRIx64
 #include "dynamo.h"
+#include "dynamo-system.h"
 #include "./lib/netcode/netcode.h"
 
 
