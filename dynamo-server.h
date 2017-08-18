@@ -1,14 +1,22 @@
 #pragma once
 #include "dynamo.h"
+#include "./lib/netcode/netcode.h"
 
 #ifdef __cplusplus
     extern "C" {
 #endif
 
 
+struct dmo_private_key {
+    u8 bytes[NETCODE_KEY_BYTES];
+};
+
 struct dmo_server {
+    // TODO: Make sure this struct is packed properly.
     u64 protocol;
     const char *address;
+    struct dmo_private_key private_key;
+    netcode_server_t *nio_server;
 };
 
 
