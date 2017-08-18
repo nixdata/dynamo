@@ -6,6 +6,7 @@
 #include "./lib/netcode/netcode.h"
 
 
+static struct dmo_client client;
 static bool running = false;
 
 
@@ -41,7 +42,7 @@ int run()
 
         net_time += frame_time;
         if(net_time >= NET_UPDATE_RATE) {
-            dmo_client_update(current_time);
+            dmo_client_update(client, current_time);
             net_time = 0;
         }
 
@@ -86,14 +87,22 @@ int run()
 void interrupt_handler(int signal)
 {
     (void)signal;
-    dmo_client_shutdown();
+    dmo_client_shutdown(client);
 }
 
 
 int main(int argc, char *argv[])
 {
+    if(argc != 3) {
+        printf("usage: server <protocol id> <address:port>\n");
+        return EXIT_FAILURE;
+    }
+
+    u64 protocol = atoll(argv[1]);
+    const char *address = argv[2];
+    client = dmo_client_create(protocol, address);
     signal(SIGINT, interrupt_handler);
-    dmo_client_startup();
+    dmo_client_startup(client);
     run();
 
     return EXIT_SUCCESS;

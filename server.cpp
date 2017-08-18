@@ -7,13 +7,14 @@
 #include "dynamo-server.h"
 
 
-static bool running = false;
+static struct dmo_server server;
+bool running;
 
 
 void interrupt_handler(int signal) 
 {
     (void) signal;
-    dmo_server_shutdown();
+    dmo_server_shutdown(server);
 }
 
 
@@ -49,7 +50,7 @@ void run()
 
         net_time += frame_time;
         if(net_time >= NET_UPDATE_RATE) {
-            dmo_server_update(current_time);
+            dmo_server_update(server, current_time);
             net_time = 0;
         }
 
@@ -90,8 +91,16 @@ void run()
 
 int main(int argc, char *argv[])
 {
+    if(argc != 3) {
+        printf("usage: server <protocol id> <address:port>\n");
+        return EXIT_FAILURE;
+    }
+
+    u64 protocol = atoll(argv[1]);
+    const char *address = argv[2];
+    server = dmo_server_create(protocol, address);
     signal(SIGINT, interrupt_handler);
-    dmo_server_startup();
+    dmo_server_startup(server);
     run();
 
     return EXIT_SUCCESS;
