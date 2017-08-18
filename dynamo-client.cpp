@@ -6,9 +6,7 @@
 #include "dynamo-client.h"
 #include "lib/netcode/netcode.h"
 
-#define TEST_PROTOCOL_ID 0x1122334455667788
 #define TEST_CONNECT_TOKEN_EXPIRY 30
-#define SERVER_ADDRESS "127.0.0.1:40000"
 
 
 static struct netcode_client_t *nio_client;
@@ -30,19 +28,12 @@ struct dmo_client dmo_client_create(u64 protocol, const char *server_address)
 
 int dmo_client_startup(struct dmo_client client)
 {
-    // TODO: Check to make sure client isn't running already.
-
-    printf("Starting Dynamo client...\n");
-
-
     dmo_time time = dmo_sys_time();
 
     if(netcode_init() != NETCODE_OK)
     {
         printf("ERROR: Failed to initialize netcode.io\n");
         return DYNAMO_ERROR;
-    } else {
-        printf("Dynamo client started!\n");
     }
 
     netcode_log_level(NETCODE_LOG_LEVEL_INFO);
@@ -70,8 +61,6 @@ int dmo_client_startup(struct dmo_client client)
     for(u32 i = 0; i < NETCODE_MAX_PACKET_SIZE; ++i) {
         packet_data[i] = (u8)42;//(u8)i;
     }
-
-    printf("Dynamo client on!\n");
 
     return DYNAMO_OK;
 }
@@ -108,12 +97,10 @@ int dmo_client_update(struct dmo_client client, dmo_time time)
 
 void dmo_client_shutdown(struct dmo_client client)
 {
-    // TODO: Flip running to false
-
-    printf("Shutting down Dynamo client...\n");
+    printf("shutting down dynamo client...\n");
     netcode_client_destroy(nio_client);
     netcode_term();
-    printf("Dynamo client off!\n");
+    printf("dynamo client off!\n");
 
     exit(0);
 }

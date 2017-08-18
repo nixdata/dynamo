@@ -5,10 +5,6 @@
 #include "./lib/netcode/netcode.h"
 
 
-#define TEST_PROTOCOL_ID 0x1122334455667788
-#define SERVER_ADDRESS "127.0.0.1:40000"
-
-
 static struct netcode_server_t *nio_server;
 static u8 packet_data[NETCODE_MAX_PACKET_SIZE];
 static uint8_t private_key[NETCODE_KEY_BYTES] = { 0x60, 0x6a, 0xbe, 0x6e, 0xc9, 0x19, 0x10, 0xea, 
@@ -29,7 +25,7 @@ struct dmo_server dmo_server_create(u64 protocol, const char *address)
 
 int dmo_server_startup(struct dmo_server server) 
 {
-    printf("Starting server...\n");
+    printf("starting server...\n");
 
     dmo_time time = dmo_sys_time();
 
@@ -88,16 +84,12 @@ int dmo_server_update(struct dmo_server server, dmo_time time)
 }
 
 
-
-
-
-
 void dmo_server_shutdown(struct dmo_server server)
 {
-    printf("\nShutting down server...\n");
+    printf("\nshutting down server...\n");
     netcode_server_destroy(nio_server);
     netcode_term();
-    printf("Server off!\n");
+    printf("server off!\n");
 
     exit(0);
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "./lib/netcode/netcdoe.h"
+
 #ifdef __cplusplus
     extern "C" {
 #endif
