@@ -1,7 +1,6 @@
 #include <time.h>
 #include <stdio.h>
 #include "dynamo.h"
-#include "dynamo-system.h"
 
 
 struct dmo_time dmo_sys_time() 

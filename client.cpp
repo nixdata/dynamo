@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <signal.h>
 #include "dynamo.h"
-#include "dynamo-system.h"
 #include "dynamo-client.h"
 #include "./lib/netcode/netcode.h"
 

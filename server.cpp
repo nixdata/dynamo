@@ -5,7 +5,6 @@
 #include <string.h>
 #include "dynamo.h"
 #include "dynamo-server.h"
-#include "dynamo-system.h"
 
 
 static bool running = false;
