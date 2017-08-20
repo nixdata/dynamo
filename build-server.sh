@@ -1,4 +1,4 @@
-gcc \
+g++ \
 -ggdb \
 -L./ \
 -Wl,-rpath=./ \
@@ -10,3 +10,4 @@ server.cpp \
 dynamo.cpp \
 dynamo-server.cpp \
 -lsodium \
+-std=c++11

@@ -12,4 +12,4 @@ RUN sh ./build-server.sh
     
 EXPOSE 8080
 
-CMD ["./server", "43", "127.0.0.1:8080"]
+CMD ["./server", "some_protocol", "127.0.0.1:8080"]
